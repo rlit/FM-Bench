@@ -1,4 +1,4 @@
-function [X1, X2] = match_descriptors(f1, f2, d1, d2)
+function [X1, X2, varargout] = match_descriptors(f1, f2, d1, d2)
 
 [idxs12, D] = knnsearch(d2, d1, 'K', 2, 'NSMethod', 'exhaustive');
 
@@ -10,6 +10,11 @@ X1 = f1(matches(:,1),1:2);
 X2 = f2(matches(:,2),1:2);
 
 dist_ratios = D(:,1)./D(:,2);
+
+if nargout > 2
+    varargout{1} = dist_ratios;
+    return
+end
 
 mask = dist_ratios < 0.8;
 X1 = X1(mask,:);
