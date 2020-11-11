@@ -1,10 +1,10 @@
 clear; close all; clc;
 
 
-% Datasets = {'TUM', 'KITTI', 'Tanks_and_Temples', 'CPC'};
-Datasets = {'TUM'};
+Datasets = {'TUM', 'KITTI', 'Tanks_and_Temples', 'CPC'};
 
-Methods = {'SIFT-RT-RANSAC'};
+Methods = {'SIFT-RT-RANSAC', 'SIFT-PT-RANSAC'};
+% Methods = {'SIFT-RT-RANSAC'};
 
 Errors = cell(length(Methods),length(Datasets));
 Inlier_rates = cell(length(Methods),length(Datasets));
