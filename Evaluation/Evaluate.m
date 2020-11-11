@@ -11,6 +11,7 @@ Inlier_rates = cell(length(Methods),length(Datasets));
 Numbers = cell(length(Methods),length(Datasets));
 for d = 1 : length(Datasets) 
     dataset = Datasets{d};
+    disp(['Data set ' dataset]);
     for m = 1 : length(Methods)
         method = Methods{m};
         
@@ -22,7 +23,7 @@ for d = 1 : length(Datasets)
         Inlier_rate = -ones(length(Results), 2);
         Number =  zeros(length(Results), 2);
         
-        for idx = 1 : length(Results)
+        for idx = progress(1:length(Results), 'Title', method) 
             
             if Results{idx}.status ~=0
                 Results{idx}.sgd_error = -1;
@@ -99,7 +100,7 @@ for d = 1 : length(Datasets)
        before_rate = meanInlierRate(1);
        after_rate = meanInlierRate(2);
        
-       fprintf(sprintf('%s %f %f %f\n', method, recall, before_rate, after_rate));
+       fprintf(sprintf('%s \t %f \t %f \t %f\n', method, recall, before_rate, after_rate));
     end 
 end
 

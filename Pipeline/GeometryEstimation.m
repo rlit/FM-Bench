@@ -22,7 +22,7 @@ load([matches_dir matcher '.mat']);
 Results = Matches;
 num_pairs = size(pairs,1);
 
-for idx = 1 : num_pairs
+for idx = progress(1 : num_pairs, 'Title', 'FM estimation') 
     l = l_pairs(idx);
     r = r_pairs(idx);
     
@@ -40,7 +40,9 @@ for idx = 1 : num_pairs
     status = 3; % 0 stands for good, others are bad estimations.
     
     try
-        [F_hat, inliers, status] = estimateFundamentalMatrix(X_l, X_r, 'Method','RANSAC', 'NumTrials', 2000);
+        [F_hat, inliers, status] = estimateFundamentalMatrix(X_l, X_r, ...
+            'Method',estimator, ...
+            'NumTrials', 2000);
     catch
         disp('Estimation Crash');
     end

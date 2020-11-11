@@ -44,6 +44,8 @@ You can download dataset and vlfeat from the link https://1drv.ms/f/s!AiV6XqkxJH
 
 ## How to use
 
+    0. run `git submodule update --init` to get MatlabProgressBar
+
     1. Run the example "Pipeline/Pipeline_Demo.m" for results of SIFT-RT-RANSAC.
     
     2. Run the evaluation "Evaluation/Evaluate.m".
