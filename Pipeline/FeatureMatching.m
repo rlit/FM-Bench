@@ -29,7 +29,7 @@ r_pairs = pairs(:,2);
 
 num_pairs = size(pairs,1);
 Matches = cell(num_pairs, 1);
-for idx = 1 : num_pairs
+for idx = progress(1 : num_pairs)
     l = l_pairs(idx);
     r = r_pairs(idx);
     
