@@ -41,7 +41,9 @@ factor2 = 1 / sqrt(h2 * h2 + w2 * w2);
 
 m = round([w1.*rand(), h1.*rand()]);
 epiLine1 = epipolarLine(F1,m);
-borderline1 = lineToBorderPoints(epiLine1,[h2, w2]);
+% borderline1 = lineToBorderPoints(epiLine1,[h2, w2]);
+borderline1 = cvalgLineToBorderPoints(epiLine1,[h2, w2]);
+
 if borderline1(1) < 0
     return;
 end
@@ -75,3 +77,15 @@ function distance = d_from_point_to_line(point, line)
     point(:,3) = 1;
     distance = abs(dot(point, line)) / (norm(line(1:2)) + 1e-10);
 end
+
+
+function lines = epipolarLine(f,pts)
+% Compute epipolar lines for stereo images.
+
+% Copyright 2010 The MathWorks, Inc.
+
+outputClass = class(f);
+nPts = size(pts, 1);
+lines = [cast(pts, outputClass), ones(nPts, 1, outputClass)] * f';
+end
+
