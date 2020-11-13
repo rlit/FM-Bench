@@ -8,6 +8,7 @@ function keypoints = read_keypoints(path)
 %
 % Copyright 2017: Johannes L. Schoenberger <jsch at inf.ethz.ch>
 
+assert(exist(path, 'file')>0, strcat('cannot locate "' , path, '"'))
 fid = fopen(path, 'r');
 shape = fread(fid, 2, 'int32');
 keypoints = fread(fid, prod(shape), 'float32');

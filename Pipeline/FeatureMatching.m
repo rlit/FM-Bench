@@ -1,6 +1,10 @@
-function FeatureMatching(wkdir, dataset, matcher)
+function FeatureMatching(wkdir, dataset, matcher, desc_suffix)
 % Matching descriptors and save results
 disp('Matching Features...');
+
+if nargin < 4
+    kp_suffix = 'descriptors';
+end
 
 dataset_dir = [wkdir 'Dataset/' dataset '/'];
 feature_dir = [wkdir 'Features/' dataset '/'];
@@ -10,11 +14,18 @@ if exist(matches_dir, 'dir') == 0
     mkdir(matches_dir);
 end
 
+matches_file = [matches_dir matcher '.mat'];
+if exist(matches_file, 'file') > 0
+    disp(['Matchs file "' matches_file '" exists, skipping ' ]);
+    return
+end
+
+
 pairs_gts = dlmread([dataset_dir 'pairs_with_gt.txt']);
 pairs_which_dataset = importdata([dataset_dir 'pairs_which_dataset.txt']);
 
 %% GT data
-plot_gt = 1;
+plot_gt = 0;
 if plot_gt
     F_gts = pairs_gts(:,3:11);
     fig = figure(10);
@@ -46,8 +57,8 @@ for idx = progress(1 : num_pairs)
     
     keypoints_l = read_keypoints([path_l '.keypoints']);
     keypoints_r = read_keypoints([path_r '.keypoints']);
-    descriptors_l = read_descriptors([path_l '.descriptors']);
-    descriptors_r = read_descriptors([path_r '.descriptors']);
+    descriptors_l = read_descriptors([path_l '.' desc_suffix]);
+    descriptors_r = read_descriptors([path_r '.' desc_suffix]);
     
     if plot_gt
         [X_l, X_r, scores] = match_descriptors(keypoints_l, keypoints_r, descriptors_l, descriptors_r);
@@ -80,7 +91,6 @@ for idx = progress(1 : num_pairs)
     Matches{idx}.X_r = X_r;
 end
 
-matches_file = [matches_dir matcher '.mat'];
 save(matches_file, 'Matches');
 end
 

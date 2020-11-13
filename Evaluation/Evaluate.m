@@ -2,9 +2,22 @@ clear; close all; clc;
 
 
 Datasets = {'TUM', 'KITTI', 'Tanks_and_Temples', 'CPC'};
+% Datasets = {'KITTI'};
+Datasets = {'TUM'};
 
-Methods = {'SIFT-RT-RANSAC', 'SIFT-PT-RANSAC'};
-% Methods = {'SIFT-RT-RANSAC'};
+
+Methods = {};
+for d = {'HardNet','SIFT'}
+    desc_name = d{1};
+        for e = {'RANSAC', 'LMedS'}
+    for m = {'pyRT', 'pyRT+GMS', 'PT', 'RT'}
+        match_method = m{1};
+            estimator = e{1};
+            Methods{end+1} = [desc_name '-' match_method '-' estimator];
+        end
+    end
+end
+
 
 Errors = cell(length(Methods),length(Datasets));
 Inlier_rates = cell(length(Methods),length(Datasets));
@@ -84,12 +97,12 @@ for d = 1 : length(Datasets)
     xlabel('NSGD Threshold');
     ylabel('Recall');
 end
-
+%%
 threshold = 0.05;
 for d = 1 : length(Datasets) 
     dataset = Datasets{d};
-    disp(['Dataset : ' dataset]);
-    disp('method recall inlier_rate_before inlier_rate_after');
+    disp(['\tDataset : ' dataset]);
+    fprintf('         method \t recall \t inlier_rate_before \t inlier_rate_after \n');
   
     for m = 1 : length(Methods)
        method = Methods{m};
@@ -100,7 +113,29 @@ for d = 1 : length(Datasets)
        before_rate = meanInlierRate(1);
        after_rate = meanInlierRate(2);
        
-       fprintf(sprintf('%s \t %f \t %f \t %f\n', method, recall, before_rate, after_rate));
+       fprintf(sprintf('%-30s \t %f \t %f \t %f\n', method, recall, before_rate, after_rate));
     end 
 end
+
+%%
+
+d_ = 1.1:0.1:1.9;
+th_ = 0.4:0.1:0.9;
+all_recall = NaN(length(d_), length(th_))';
+for d = 1 : length(Datasets) 
+    for m = 1 : length(Methods)
+       all_recall(m) = sum(Errors{m,d} < threshold) / num_pairs;
+    end 
+end
+figure(30); clf
+o = imagesc(all_recall, prctile(all_recall(:), [10 100]));
+set(gca,'fontsize', 18);
+axis image on
+o.XData = [1.1 1.9];
+o.YData = [0.4 0.9];
+xlabel 'dustbin score'
+ylabel 'min prob'
+o = colorbar;
+set(get(o,'ylabel'),'string','recall');
+
 

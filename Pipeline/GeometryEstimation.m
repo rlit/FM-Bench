@@ -10,6 +10,12 @@ if exist(results_dir, 'dir') == 0
     mkdir(results_dir);
 end
 
+results_file = [results_dir matcher '-' estimator '.mat'];
+if exist(results_file, 'file') > 0
+    disp(['Result file "' results_file '" exists, skipping ' ]);
+    return
+end
+
 pairs_gts = dlmread([dataset_dir 'pairs_with_gt.txt']);
 pairs_which_dataset = importdata([dataset_dir 'pairs_which_dataset.txt']);
 
@@ -18,10 +24,11 @@ l_pairs = pairs(:,1);
 r_pairs = pairs(:,2);
 F_gts = pairs_gts(:,3:11);
 
-load([matches_dir matcher '.mat']);
-Results = Matches;
+loaded = load([matches_dir matcher '.mat']);
+Results = loaded.Matches;
 num_pairs = size(pairs,1);
 
+is_failed = false(num_pairs);
 for idx = progress(1 : num_pairs, 'Title', 'FM estimation') 
     l = l_pairs(idx);
     r = r_pairs(idx);
@@ -41,10 +48,11 @@ for idx = progress(1 : num_pairs, 'Title', 'FM estimation')
     
     try
         [F_hat, inliers, status] = estimateFundamentalMatrix(X_l, X_r, ...
-            'Method',estimator, ...
+            'Method', estimator, ...
             'NumTrials', 2000);
     catch
-        disp('Estimation Crash');
+        is_failed(idx) = true;
+%         disp('Estimation Crash');
     end
     
     Results{idx}.F_hat = F_hat;
@@ -52,7 +60,10 @@ for idx = progress(1 : num_pairs, 'Title', 'FM estimation')
     Results{idx}.status = status;
 end
 
-results_file = [results_dir matcher '-' estimator '.mat'];
+if any(is_failed)
+    disp([sum(is_failed) ' pairs failed'])
+end
+
 save(results_file, 'Results');
 
 disp('Finished.');
