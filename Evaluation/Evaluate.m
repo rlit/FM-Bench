@@ -21,6 +21,17 @@ for d = {'HardNet','SIFT'}
 end
 
 
+estimator='LMedS';
+desc_name = 'HardNet';
+match_method = 'PT';
+Methods = {};
+for d = 1.1:0.1:1.9
+    for th = 0.4:0.1:0.9
+        Methods{end+1} = [desc_name '-' match_method '+D' num2str(d) '-' estimator  '-TH' num2str(th)];
+    end
+end
+
+
 Errors = cell(length(Methods),length(Datasets));
 Inlier_rates = cell(length(Methods),length(Datasets));
 Numbers = cell(length(Methods),length(Datasets));
@@ -50,8 +61,15 @@ for d = 1 : length(Datasets)
             F2 = Results{idx}.F_hat;
             size1 = double(Results{idx}.size_l);
             size2 = double(Results{idx}.size_r);
-            X1 = Results{idx}.X_l';
-            X2 = Results{idx}.X_r';
+            if true
+                th = str2double(filename(end-6:end-4));
+                scores = Results{idx}.scores;
+                X1 = Results{idx}.X_l_(scores > th, :)';
+                X2 = Results{idx}.X_r_(scores > th, :)';
+            else
+                X1 = Results{idx}.X_l';
+                X2 = Results{idx}.X_r';
+            end
             inliers = Results{idx}.inliers;
 
             if isfield(Results{idx}, 'sgd_error') ~= 1 || Results{idx}.sgd_error < 0
@@ -124,16 +142,16 @@ end
 % d_ = 1.1:0.1:1.9;
 % th_ = 0.4:0.1:0.9;
 % all_recall = NaN(length(d_), length(th_))';
-% for d = 1 : length(Datasets) 
+% for d = 1 : length(Datasets)
 %     for m = 1 : length(Methods)
 %        all_recall(m) = sum(Errors{m,d} < threshold) / num_pairs;
-%     end 
+%     end
 % end
 % figure(30); clf
 % o = imagesc(all_recall, prctile(all_recall(:), [10 100]));
 % set(gca,'fontsize', 18);
 % axis image on
-% o.XData = [1.1 1.9];  
+% o.XData = [1.1 1.9];
 % o.YData = [0.4 0.9];
 % xlabel 'dustbin score'
 % ylabel 'min prob'
