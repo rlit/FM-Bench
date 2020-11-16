@@ -2,6 +2,7 @@ clear; clc; close all;
 set(0,'DefaultFigureWindowStyle','docked')
 wkdir = '../'; % The root foler of FM-Bench
 addpath([wkdir 'vlfeat-0.9.21/toolbox/']);
+addpath([wkdir 'MatlabProgressBar/']);
 vl_setup;
 
 Datasets = {'TUM', 'KITTI', 'Tanks_and_Temples', 'CPC'};

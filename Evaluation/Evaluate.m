@@ -1,4 +1,6 @@
 clear; close all; clc;
+set(0,'DefaultFigureWindowStyle','docked')
+addpath([wkdir 'MatlabProgressBar/']);
 
 
 Datasets = {'TUM', 'KITTI', 'Tanks_and_Temples', 'CPC'};
@@ -46,8 +48,8 @@ for d = 1 : length(Datasets)
           
             F1 = Results{idx}.F_gt;
             F2 = Results{idx}.F_hat;
-            size1 = Results{idx}.size_l;
-            size2 = Results{idx}.size_r;
+            size1 = double(Results{idx}.size_l);
+            size2 = double(Results{idx}.size_r);
             X1 = Results{idx}.X_l';
             X2 = Results{idx}.X_r';
             inliers = Results{idx}.inliers;
@@ -119,23 +121,23 @@ end
 
 %%
 
-d_ = 1.1:0.1:1.9;
-th_ = 0.4:0.1:0.9;
-all_recall = NaN(length(d_), length(th_))';
-for d = 1 : length(Datasets) 
-    for m = 1 : length(Methods)
-       all_recall(m) = sum(Errors{m,d} < threshold) / num_pairs;
-    end 
-end
-figure(30); clf
-o = imagesc(all_recall, prctile(all_recall(:), [10 100]));
-set(gca,'fontsize', 18);
-axis image on
-o.XData = [1.1 1.9];
-o.YData = [0.4 0.9];
-xlabel 'dustbin score'
-ylabel 'min prob'
-o = colorbar;
-set(get(o,'ylabel'),'string','recall');
+% d_ = 1.1:0.1:1.9;
+% th_ = 0.4:0.1:0.9;
+% all_recall = NaN(length(d_), length(th_))';
+% for d = 1 : length(Datasets) 
+%     for m = 1 : length(Methods)
+%        all_recall(m) = sum(Errors{m,d} < threshold) / num_pairs;
+%     end 
+% end
+% figure(30); clf
+% o = imagesc(all_recall, prctile(all_recall(:), [10 100]));
+% set(gca,'fontsize', 18);
+% axis image on
+% o.XData = [1.1 1.9];  
+% o.YData = [0.4 0.9];
+% xlabel 'dustbin score'
+% ylabel 'min prob'
+% o = colorbar;
+% set(get(o,'ylabel'),'string','recall');
 
 
